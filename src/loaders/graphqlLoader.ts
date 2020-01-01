@@ -7,9 +7,11 @@ import {
   MicroframeworkLoader,
   MicroframeworkSettings
 } from 'microframework-w3tec'
+import playground from 'graphql-playground-middleware-express'
 
 import { env } from '../env'
 import { Context } from '../api/Context'
+import { gqlAuthorizationChecker } from '../auth/gqlAuthorizationChecker'
 
 export const graphqlLoader: MicroframeworkLoader = async (
   settings: MicroframeworkSettings | undefined
@@ -20,8 +22,12 @@ export const graphqlLoader: MicroframeworkLoader = async (
     const schema = await buildSchema({
       resolvers: env.app.dirs.resolvers,
       emitSchemaFile: path.resolve(__dirname, '../api', 'schema.gql'),
-      container: ({ context }: ResolverData<Context>) => context.container
+      container: ({ context }: ResolverData<Context>) => context.container,
+      authChecker: gqlAuthorizationChecker,
+      authMode: 'error'
     })
+
+    expressApp.get('/graphql', playground({ endpoint: '/graphql' }))
 
     expressApp.use(
       env.graphql.route,
@@ -34,8 +40,8 @@ export const graphqlLoader: MicroframeworkLoader = async (
 
         GraphQLHTTP({
           schema,
-          context,
-          graphiql: env.graphql.editor
+          context
+          // graphiql: env.graphql.editor
         })(request, response)
       }
     )

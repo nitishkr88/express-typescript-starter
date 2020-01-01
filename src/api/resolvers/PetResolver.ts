@@ -7,7 +7,8 @@ import {
   Mutation,
   FieldResolver,
   Root,
-  Ctx
+  Ctx,
+  Authorized
 } from 'type-graphql'
 
 import { Pet as PetModel } from '../models/Pet'
@@ -29,12 +30,14 @@ export class PetResolver {
     @DLoader(UserModel) private userLoader: DataLoader<string, UserModel>
   ) {}
 
+  @Authorized()
   @Query(returns => [Pet])
   public pets(@Ctx() { requestId }: Context): Promise<PetModel[]> {
     this.log.info(`{${requestId}} Find all pets`)
     return this.petService.find()
   }
 
+  @Authorized()
   @Mutation(returns => Pet)
   public addPet(@Arg('pet') pet: PetInput): Promise<PetModel> {
     const newPet = new PetModel()

@@ -1,5 +1,5 @@
 import { Service } from 'typedi'
-import { Resolver, Query, FieldResolver, Root } from 'type-graphql'
+import { Resolver, Query, FieldResolver, Root, Authorized } from 'type-graphql'
 
 import { User as UserModel } from '../models/User'
 import { User } from '../types/User'
@@ -14,6 +14,7 @@ export class UserResolver {
     private petService: PetService
   ) {}
 
+  @Authorized()
   @Query(returns => [User])
   public users(): Promise<any> {
     return this.userService.find()
