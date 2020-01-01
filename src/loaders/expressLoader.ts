@@ -1,14 +1,18 @@
 import { Application } from 'express'
-import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3tec'
+import {
+  MicroframeworkLoader,
+  MicroframeworkSettings
+} from 'microframework-w3tec'
 import { createExpressServer } from 'routing-controllers'
 
+import { authorizationChecker } from '../auth/authorizationChecker'
 import { env } from '../env'
 
 export const expressLoader: MicroframeworkLoader = (
   settings: MicroframeworkSettings | undefined
 ) => {
   if (settings) {
-    // const connection = settings.getData('connection')
+    const connection = settings.getData('connection')
 
     const expressApp: Application = createExpressServer({
       cors: true,
@@ -20,7 +24,7 @@ export const expressLoader: MicroframeworkLoader = (
       middlewares: env.app.dirs.middlewares,
       interceptors: env.app.dirs.interceptors,
 
-      // authorizationChecker: authorizationChecker(connection),
+      authorizationChecker: authorizationChecker(connection)
       // currentUserChecker: currentUserChecker(connection)
     })
 

@@ -6,8 +6,10 @@ import {
   Post,
   Put,
   Delete,
-  OnUndefined
+  OnUndefined,
+  Authorized
 } from 'routing-controllers'
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi'
 import { IsNotEmpty, IsNumber, IsUUID, ValidateNested } from 'class-validator'
 
 import { UserResponse } from './UserController'
@@ -36,22 +38,27 @@ class CreatePetBody extends BasePet {
   public userId: string
 }
 
+@Authorized()
 @JsonController('/pets')
+@OpenAPI({ security: [{ basicAuth: [] }] })
 export class PetController {
   constructor(private petService: PetService) {}
 
   @Get()
+  @ResponseSchema(PetResponse, { isArray: true })
   public find(): Promise<Pet[]> {
     return this.petService.find()
   }
 
   @Get('/:id')
   @OnUndefined(PetNotFoundError)
+  @ResponseSchema(PetResponse)
   public one(@Param('id') id: string): Promise<Pet | undefined> {
     return this.petService.findOne(id)
   }
 
   @Post()
+  @ResponseSchema(PetResponse)
   public create(@Body({ required: true }) body: CreatePetBody): Promise<Pet> {
     const pet = new Pet()
     pet.age = body.age
@@ -62,6 +69,7 @@ export class PetController {
   }
 
   @Put('/:id')
+  @ResponseSchema(PetResponse)
   public update(@Param('id') id: string, @Body() body: BasePet): Promise<Pet> {
     const pet = new Pet()
     pet.age = body.age

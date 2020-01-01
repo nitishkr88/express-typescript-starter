@@ -6,8 +6,10 @@ import {
   Post,
   Put,
   Delete,
-  OnUndefined
+  OnUndefined,
+  Authorized
 } from 'routing-controllers'
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi'
 import { IsNotEmpty, IsEmail, IsUUID, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 
@@ -45,22 +47,27 @@ class CreateUserBody extends BaseUser {
   public password: string
 }
 
+@Authorized()
 @JsonController('/users')
+@OpenAPI({ security: [{ basicAuth: [] }] })
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
+  @ResponseSchema(UserResponse, { isArray: true })
   public find(): Promise<User[]> {
     return this.userService.find()
   }
 
   @Get('/:id')
   @OnUndefined(UserNotFoundError)
+  @ResponseSchema(UserResponse)
   public one(@Param('id') id: string): Promise<User | undefined> {
     return this.userService.findOne(id)
   }
 
   @Post()
+  @ResponseSchema(UserResponse)
   public create(@Body() body: CreateUserBody): Promise<User> {
     const user = new User()
     user.email = body.email
@@ -73,6 +80,7 @@ export class UserController {
   }
 
   @Put('/:id')
+  @ResponseSchema(UserResponse)
   public update(
     @Param('id') id: string,
     @Body() body: BaseUser

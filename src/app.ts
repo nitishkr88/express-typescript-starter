@@ -11,6 +11,7 @@ import { expressLoader } from './loaders/expressLoader'
 import { homeLoader } from './loaders/homeLoader'
 import { publicLoader } from './loaders/publicLoader'
 import { graphqlLoader } from './loaders/graphqlLoader'
+import { swaggerLoader } from './loaders/swaggerLoader'
 
 const log = new Logger(__filename)
 
@@ -20,6 +21,7 @@ bootstrapMicroframework({
     diLoader,
     typeormLoader,
     expressLoader,
+    swaggerLoader,
     homeLoader,
     publicLoader,
     graphqlLoader
