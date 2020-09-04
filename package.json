@@ -65,7 +65,7 @@
     "serve-favicon": "^2.5.0",
     "swagger-ui-express": "^4.1.2",
     "ts-node": "^8.5.4",
-    "type-graphql": "^0.17.5",
+    "type-graphql": "^0.17.6",
     "typedi": "^0.8.0",
     "typeorm": "^0.2.21",
     "typeorm-seeding": "^1.2.0",
